@@ -5,7 +5,7 @@ const initializeSchema = require('./initializeSchema');
 const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: 'your_pass_here',
   database: 'shortly',
 });
 
