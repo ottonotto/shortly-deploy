@@ -1,7 +1,7 @@
 const app = require('./app');
 const { db, initializeSchema } = require('./db');
 
-const PORT = 80 || 8080;
+const PORT = 1234 || 80 || 8080;
 const DB_NAME = 'shortly';
 
 initializeSchema({
