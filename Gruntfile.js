@@ -3,6 +3,18 @@ module.exports = (grunt) => {
     pkg: grunt.file.readJSON('package.json'),
 
     concat: {
+      dist: {
+        src: [
+          'public/client/app.js',
+          'public/client/createLinkView.js',
+          'public/client/link.js',
+          'public/client/links.js',
+          'public/client/linksView.js',
+          'public/client/linkView.js',
+          'public/client/router.js',
+        ],
+        dest: 'dist/build.js',
+      },
     },
 
     mochaTest: {
@@ -21,6 +33,19 @@ module.exports = (grunt) => {
     },
 
     uglify: {
+      mytarget: {
+        files: {
+          'dist/build.js': [
+            'public/client/app.js',
+            'public/client/createLinkView.js',
+            'public/client/link.js',
+            'public/client/links.js',
+            'public/client/linksView.js',
+            'public/client/linkView.js',
+            'public/client/router.js',
+          ],
+        },
+      },
     },
 
     eslint: {
@@ -28,23 +53,25 @@ module.exports = (grunt) => {
         quiet: true,
       },
       target: [
+        'public/client/app.js',
+        'public/client/createLinkView.js',
+        'public/client/link.js',
+        'public/client/links.js',
+        'public/client/linksView.js',
+        'public/client/linkView.js',
+        'public/client/router.js',
         // Add list of files to lint here
       ],
     },
 
     cssmin: {
+      'public/style.min.css': ['public/style.css'],
     },
 
     watch: {
       scripts: {
-        files: [
-          'public/client/**/*.js',
-          'public/lib/**/*.js',
-        ],
-        tasks: [
-          'concat',
-          'uglify',
-        ],
+        files: ['public/client/**/*.js', 'public/lib/**/*.js'],
+        tasks: ['concat', 'uglify'],
       },
       css: {
         files: 'public/*.css',
@@ -54,6 +81,7 @@ module.exports = (grunt) => {
 
     shell: {
       prodServer: {
+        command: 'git push github main',
       },
     },
   });
@@ -68,29 +96,33 @@ module.exports = (grunt) => {
   grunt.loadNpmTasks('grunt-nodemon');
 
   grunt.registerTask('server-dev', (target) => {
-    grunt.task.run([ 'nodemon', 'watch' ]);
+    grunt.task.run(['nodemon', 'watch']);
   });
 
   ////////////////////////////////////////////////////
   // Main grunt tasks
   ////////////////////////////////////////////////////
 
-  grunt.registerTask('test', [
-    'mochaTest',
-  ]);
+  grunt.registerTask('test', ['mochaTest']);
 
-  grunt.registerTask('build', [
-  ]);
+  grunt.registerTask('build', ['concat', 'uglify', 'eslint', 'cssmin']);
 
   grunt.registerTask('upload', (n) => {
     if (grunt.option('prod')) {
       // add your production server task here
+      grunt.task.run(['shell']);
     } else {
-      grunt.task.run([ 'server-dev' ]);
+      grunt.task.run(['server-dev']);
     }
   });
 
-  grunt.registerTask('deploy', [
+  grunt.registerTask('deploy', (n) => {
+    if (grunt.option('prod')) {
+      grunt.task.run(['build', 'shell']);
+    } else {
+      grunt.task.run(['build', 'upload']);
+    }
     // add your deploy tasks here
-  ]);
+  });
 };
+
